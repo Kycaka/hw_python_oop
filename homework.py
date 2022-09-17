@@ -4,7 +4,7 @@ from dataclasses import dataclass
 
 @dataclass
 class InfoMessage:
-    """Информационное сообщение о тренировке."""
+    """Информационное ggсообщение о тренировке."""
     def __init__(self,
                  training_type: str,
                  duration: float,
@@ -32,7 +32,7 @@ class Training:
     """Базовый класс тренировки."""
     M_IN_KM: int = 1000
     LEN_STEP: float = 0.65
-    H_IN_M: float = 60
+    MINS_IN_HOUR: float = 60
 
     def __init__(self,
                  action: int,
@@ -73,7 +73,7 @@ class Running(Training):
     def get_spent_calories(self) -> float:
         return ((self.COEFF_CALORIE_RUN_1 * self.get_mean_speed()
                 - self.COEFF_CALORIE_RUN_2) * self.weight
-                / self.M_IN_KM * (self.duration * self.H_IN_M))
+                / self.M_IN_KM * (self.duration * self.MINS_IN_HOUR))
 
 
 class SportsWalking(Training):
@@ -94,7 +94,7 @@ class SportsWalking(Training):
         return ((self.COEFF_CALORIE_WALK_1 * self.weight
                 + (self.get_mean_speed() ** 2 // self.height)
                 * self.COEFF_CALORIE_WALK_2 * self.weight)
-                * (self.duration * self.H_IN_M))
+                * (self.duration * self.MINS_IN_HOUR))
 
 
 class Swimming(Training):
@@ -133,15 +133,13 @@ class Swimming(Training):
 
 def read_package(workout_type: str, data: list) -> Training:
     """Прочитать данные полученные от датчиков."""
-    type_of_training: Dict[str, Type[Training]] = {
-        'SWM': Swimming,
-        'RUN': Running,
-        'WLK': SportsWalking,
-    }
+    type_of_training: Dict[str, Type[Training]] = {'SWM': Swimming,
+                                                   'RUN': Running,
+                                                   'WLK': SportsWalking,
+                                                   }
     if workout_type not in type_of_training:
         raise ValueError('Тип тренировки не найден!')
-    else:
-        return type_of_training[workout_type](*data)
+    return type_of_training[workout_type](*data)
 
 
 def main(training: Training) -> None:
